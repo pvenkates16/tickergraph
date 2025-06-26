@@ -1,0 +1,44 @@
+{
+  "nodes": [
+    { "id": "WM", "group": "company" },
+    { "id": "RSG", "group": "company" },
+    { "id": "WCN", "group": "company" },
+    { "id": "CLH", "group": "company" },
+    { "id": "CWST", "group": "company" },
+    { "id": "Core Waste Ops", "group": "driver" },
+    { "id": "Landfill Services", "group": "driver" },
+    { "id": "Recycling Services", "group": "driver" },
+    { "id": "Plastic Recycling", "group": "driver" },
+    { "id": "Metal Recycling", "group": "driver" },
+    { "id": "Environmental Services", "group": "driver" },
+    { "id": "Clean Tech", "group": "driver" },
+    { "id": "Sustainable Logistics", "group": "driver" },
+    { "id": "Commodity Exposure", "group": "anti" },
+    { "id": "Regulatory Risk", "group": "anti" },
+    { "id": "Labor/Fuel Cost Risk", "group": "anti" },
+    { "id": "Capital Intensity", "group": "anti" },
+    { "id": "Anti-RSG", "group": "anti" },
+    { "id": "Anti-WCN", "group": "anti" },
+    { "id": "Anti-CLH", "group": "anti" },
+    { "id": "Anti-CWST", "group": "anti" }
+  ],
+  "links": [
+    { "source": "WM", "target": "Core Waste Ops", "value": 10 },
+    { "source": "WM", "target": "Landfill Services", "value": 10 },
+    { "source": "WM", "target": "Recycling Services", "value": 7 },
+    { "source": "WM", "target": "Plastic Recycling", "value": 7 },
+    { "source": "WM", "target": "Metal Recycling", "value": 5 },
+    { "source": "WM", "target": "Environmental Services", "value": 6 },
+    { "source": "WM", "target": "Clean Tech", "value": 5 },
+    { "source": "WM", "target": "Sustainable Logistics", "value": 6 },
+    { "source": "WM", "target": "Commodity Exposure", "value": -6 },
+    { "source": "WM", "target": "Regulatory Risk", "value": -5 },
+    { "source": "WM", "target": "Labor/Fuel Cost Risk", "value": -5 },
+    { "source": "WM", "target": "Capital Intensity", "value": -4 },
+    { "source": "WM", "target": "Anti-RSG", "value": -3 },
+    { "source": "WM", "target": "Anti-WCN", "value": -3 },
+    { "source": "WM", "target": "Anti-CLH", "value": -4 },
+    { "source": "WM", "target": "Anti-CWST", "value": -3 }
+  ]
+}
+

@@ -1,152 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Waste Sector Driver Graph</title>
+  <meta charset="UTF-8" />
+  <title>WM & Peers: Drivers vs Anti-Drivers</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-    }
-    h2 {
-      padding: 1em;
-      text-align: center;
-    }
-    svg {
-      width: 100%;
-      height: 100vh;
-      background-color: #f9f9f9;
-    }
-    .link {
-      stroke-opacity: 0.6;
-    }
-    .node text {
-      pointer-events: none;
-      font-size: 12px;
-    }
-  </style>
+  <script defer src="main.js"></script>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <h2>Force-Directed Graph: WM & Peers vs Drivers</h2>
-  <svg></svg>
+  <div id="controls">
+    <label for="companySelect"><strong>Show Connections for:</strong></label>
+    <select id="companySelect">
+      <option value="ALL">All Companies</option>
+    </select>
+    <div style="margin-top: 0.5em;">
+      <span style="color:#1f77b4;">● Company</span>
+      <span style="color:#2ca02c; margin-left:10px;">● Driver</span>
+      <span style="color:#d62728; margin-left:10px;">● Anti-driver</span>
+    </div>
+    <div><em>Line thickness shows connection strength</em></div>
+  </div>
 
-  <script>
-    const nodes = [
-      { id: "WM", group: "company" },
-      { id: "RSG", group: "company" },
-      { id: "WCN", group: "company" },
-      { id: "CLH", group: "company" },
-      { id: "CWST", group: "company" },
-      { id: "Core Waste Ops", group: "driver" },
-      { id: "Landfill Services", group: "driver" },
-      { id: "Recycling Services", group: "driver" },
-      { id: "Plastic Recycling", group: "driver" },
-      { id: "Metal Recycling", group: "driver" },
-      { id: "Environmental Services", group: "driver" },
-      { id: "Clean Tech", group: "driver" },
-      { id: "Sustainable Logistics", group: "driver" },
-      { id: "Commodity Exposure", group: "anti" },
-      { id: "Regulatory Risk", group: "anti" },
-      { id: "Labor/Fuel Cost Risk", group: "anti" },
-      { id: "Capital Intensity", group: "anti" }
-    ];
-
-    const links = [
-      { source: "WM", target: "Core Waste Ops", value: 10 },
-      { source: "WM", target: "Landfill Services", value: 10 },
-      { source: "WM", target: "Recycling Services", value: 7 },
-      { source: "WM", target: "Plastic Recycling", value: 7 },
-      { source: "WM", target: "Metal Recycling", value: 5 },
-      { source: "WM", target: "Environmental Services", value: 6 },
-      { source: "WM", target: "Clean Tech", value: 5 },
-      { source: "WM", target: "Sustainable Logistics", value: 6 },
-      { source: "WM", target: "Commodity Exposure", value: -6 },
-      { source: "WM", target: "Regulatory Risk", value: -5 },
-      { source: "WM", target: "Labor/Fuel Cost Risk", value: -5 },
-      { source: "WM", target: "Capital Intensity", value: -4 }
-    ];
-
-    const svg = d3.select("svg");
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-
-    const color = d3.scaleOrdinal()
-      .domain(["company", "driver", "anti"])
-      .range(["#1f77b4", "#2ca02c", "#d62728"]);
-
-    const simulation = d3.forceSimulation(nodes)
-      .force("link", d3.forceLink(links).id(d => d.id).distance(150))
-      .force("charge", d3.forceManyBody().strength(-500))
-      .force("center", d3.forceCenter(width / 2, height / 2))
-      .force("collide", d3.forceCollide(40));
-
-    const container = svg.append("g");
-
-    const link = container.append("g")
-      .attr("stroke", "#999")
-      .attr("stroke-opacity", 0.5)
-      .selectAll("line")
-      .data(links)
-      .join("line")
-      .attr("stroke-width", d => Math.sqrt(Math.abs(d.value)));
-
-    const node = container.selectAll("circle")
-      .data(nodes)
-      .join("circle")
-      .attr("r", 10)
-      .attr("fill", d => color(d.group))
-      .call(drag(simulation));
-
-    const label = container.selectAll("text")
-      .data(nodes)
-      .join("text")
-      .text(d => d.id)
-      .attr("dx", 12)
-      .attr("dy", "0.35em")
-      .style("font-size", "12px");
-
-    simulation.on("tick", () => {
-      link
-        .attr("x1", d => d.source.x)
-        .attr("y1", d => d.source.y)
-        .attr("x2", d => d.target.x)
-        .attr("y2", d => d.target.y);
-
-      node
-        .attr("cx", d => d.x)
-        .attr("cy", d => d.y);
-
-      label
-        .attr("x", d => d.x)
-        .attr("y", d => d.y);
-    });
-
-    svg.call(d3.zoom()
-      .extent([[0, 0], [width, height]])
-      .scaleExtent([0.1, 4])
-      .on("zoom", (event) => {
-        container.attr("transform", event.transform);
-      }));
-
-    function drag(simulation) {
-      return d3.drag()
-        .on("start", (event, d) => {
-          if (!event.active) simulation.alphaTarget(0.3).restart();
-          d.fx = d.x;
-          d.fy = d.y;
-        })
-        .on("drag", (event, d) => {
-          d.fx = event.x;
-          d.fy = event.y;
-        })
-        .on("end", (event, d) => {
-          if (!event.active) simulation.alphaTarget(0);
-          d.fx = null;
-          d.fy = null;
-        });
-    }
-  </script>
+  <svg id="graph"></svg>
+  <div class="tooltip" id="tooltip"></div>
 </body>
 </html>
 
