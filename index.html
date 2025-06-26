@@ -1,18 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Driver Strength Graph - Waste Sector</title>
+  <meta charset="UTF-8">
+  <title>Waste Sector Driver Graph</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; }
-    .link { stroke-opacity: 0.6; }
-    .node text { pointer-events: none; font-size: 12px; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    h2 {
+      padding: 1em;
+      text-align: center;
+    }
+    svg {
+      width: 100%;
+      height: 100vh;
+      background-color: #f9f9f9;
+    }
+    .link {
+      stroke-opacity: 0.6;
+    }
+    .node text {
+      pointer-events: none;
+      font-size: 12px;
+    }
   </style>
 </head>
 <body>
-  <h2>Company Drivers & Anti-Drivers Graph</h2>
-  <svg width="960" height="600"></svg>
+  <h2>Force-Directed Graph: WM & Peers vs Drivers</h2>
+  <svg></svg>
 
   <script>
     const nodes = [
@@ -41,95 +58,94 @@
       { source: "WM", target: "Recycling Services", value: 7 },
       { source: "WM", target: "Plastic Recycling", value: 7 },
       { source: "WM", target: "Metal Recycling", value: 5 },
-      { source: "WM", target: "Clean Tech", value: 5 },
       { source: "WM", target: "Environmental Services", value: 6 },
+      { source: "WM", target: "Clean Tech", value: 5 },
       { source: "WM", target: "Sustainable Logistics", value: 6 },
-      { source: "WM", target: "Commodity Exposure", value: 6 },
-      { source: "WM", target: "Regulatory Risk", value: 5 },
-      { source: "WM", target: "Labor/Fuel Cost Risk", value: 5 },
-      { source: "WM", target: "Capital Intensity", value: 4 },
-      // Add additional links for other companies here…
+      { source: "WM", target: "Commodity Exposure", value: -6 },
+      { source: "WM", target: "Regulatory Risk", value: -5 },
+      { source: "WM", target: "Labor/Fuel Cost Risk", value: -5 },
+      { source: "WM", target: "Capital Intensity", value: -4 }
     ];
 
-    const svg = d3.select("svg"),
-          width = +svg.attr("width"),
-          height = +svg.attr("height");
+    const svg = d3.select("svg");
+    const width = window.innerWidth;
+    const height = window.innerHeight;
 
     const color = d3.scaleOrdinal()
       .domain(["company", "driver", "anti"])
-      .range(["#1f77b4", "#2ca02c", "#d62728"]); // blue, green, red
-
-    const link = svg.append("g")
-        .attr("stroke", "#999")
-        .selectAll("line")
-        .data(links)
-        .join("line")
-        .attr("class", "link")
-        .attr("stroke-width", d => Math.sqrt(Math.abs(d.value)));
-
-    const node = svg.append("g")
-        .attr("stroke", "#fff")
-        .attr("stroke-width", 1.5)
-        .selectAll("circle")
-        .data(nodes)
-        .join("circle")
-        .attr("r", 8)
-        .attr("fill", d => color(d.group))
-        .call(drag(simulation));
-
-    const label = svg.append("g")
-        .selectAll("text")
-        .data(nodes)
-        .join("text")
-        .text(d => d.id)
-        .attr("font-size", 12)
-        .attr("dx", 12)
-        .attr("dy", "0.35em");
+      .range(["#1f77b4", "#2ca02c", "#d62728"]);
 
     const simulation = d3.forceSimulation(nodes)
-        .force("link", d3.forceLink(links).id(d => d.id).distance(120))
-        .force("charge", d3.forceManyBody().strength(-250))
-        .force("center", d3.forceCenter(width / 2, height / 2))
-        .on("tick", ticked);
+      .force("link", d3.forceLink(links).id(d => d.id).distance(150))
+      .force("charge", d3.forceManyBody().strength(-500))
+      .force("center", d3.forceCenter(width / 2, height / 2))
+      .force("collide", d3.forceCollide(40));
 
-    function ticked() {
+    const container = svg.append("g");
+
+    const link = container.append("g")
+      .attr("stroke", "#999")
+      .attr("stroke-opacity", 0.5)
+      .selectAll("line")
+      .data(links)
+      .join("line")
+      .attr("stroke-width", d => Math.sqrt(Math.abs(d.value)));
+
+    const node = container.selectAll("circle")
+      .data(nodes)
+      .join("circle")
+      .attr("r", 10)
+      .attr("fill", d => color(d.group))
+      .call(drag(simulation));
+
+    const label = container.selectAll("text")
+      .data(nodes)
+      .join("text")
+      .text(d => d.id)
+      .attr("dx", 12)
+      .attr("dy", "0.35em")
+      .style("font-size", "12px");
+
+    simulation.on("tick", () => {
       link
-          .attr("x1", d => d.source.x)
-          .attr("y1", d => d.source.y)
-          .attr("x2", d => d.target.x)
-          .attr("y2", d => d.target.y);
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y);
+
       node
-          .attr("cx", d => d.x)
-          .attr("cy", d => d.y);
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y);
+
       label
-          .attr("x", d => d.x)
-          .attr("y", d => d.y);
-    }
+        .attr("x", d => d.x)
+        .attr("y", d => d.y);
+    });
+
+    svg.call(d3.zoom()
+      .extent([[0, 0], [width, height]])
+      .scaleExtent([0.1, 4])
+      .on("zoom", (event) => {
+        container.attr("transform", event.transform);
+      }));
 
     function drag(simulation) {
-      function dragstarted(event, d) {
-        if (!event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-      }
-
-      function dragged(event, d) {
-        d.fx = event.x;
-        d.fy = event.y;
-      }
-
-      function dragended(event, d) {
-        if (!event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
-      }
-
       return d3.drag()
-          .on("start", dragstarted)
-          .on("drag", dragged)
-          .on("end", dragended);
+        .on("start", (event, d) => {
+          if (!event.active) simulation.alphaTarget(0.3).restart();
+          d.fx = d.x;
+          d.fy = d.y;
+        })
+        .on("drag", (event, d) => {
+          d.fx = event.x;
+          d.fy = event.y;
+        })
+        .on("end", (event, d) => {
+          if (!event.active) simulation.alphaTarget(0);
+          d.fx = null;
+          d.fy = null;
+        });
     }
   </script>
 </body>
 </html>
-
