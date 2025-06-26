@@ -2,29 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Waste Sector Driver Graph</title>
+  <title>WM & Peers - Drivers vs Anti-Drivers</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
+      overflow: hidden;
     }
     h2 {
       padding: 1em;
       text-align: center;
     }
     svg {
-      width: 100%;
-      height: 100%;
       background-color: #f9f9f9;
+      display: block;
     }
   </style>
 </head>
 <body>
-  <h2>Force-Directed Graph: WM & Peers vs Drivers</h2>
-  <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid meet"></svg>
+  <h2>Force-Directed Graph: WM & Competitors vs Drivers</h2>
+  <svg id="graph"></svg>
 
   <script>
+    const svg = d3.select("#graph");
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    svg.attr("width", width).attr("height", height);
+
     const nodes = [
       { id: "WM", group: "company" },
       { id: "RSG", group: "company" },
@@ -86,10 +91,6 @@
       { source: "CWST", target: "Regulatory Risk", value: -5 }
     ];
 
-    const svg = d3.select("svg");
-    const width = 1200;
-    const height = 800;
-
     const color = d3.scaleOrdinal()
       .domain(["company", "driver", "anti"])
       .range(["#1f77b4", "#2ca02c", "#d62728"]);
@@ -135,11 +136,9 @@
         .attr("y1", d => d.source.y)
         .attr("x2", d => d.target.x)
         .attr("y2", d => d.target.y);
-
       node
         .attr("cx", d => d.x)
         .attr("cy", d => d.y);
-
       label
         .attr("x", d => d.x)
         .attr("y", d => d.y);
