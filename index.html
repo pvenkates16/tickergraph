@@ -106,12 +106,15 @@
     const container = svg.append("g");
 
     const link = container.append("g")
-      .attr("stroke", "#aaa")
-      .attr("stroke-opacity", 0.6)
       .selectAll("line")
       .data(links)
       .join("line")
-      .attr("stroke-width", d => Math.sqrt(Math.abs(d.value)));
+      .attr("stroke", d => {
+        const target = nodes.find(n => n.id === d.target || n.id === d.target.id);
+        return target.group === "anti" ? "#d62728" : "#2ca02c"; // red or green
+      })
+      .attr("stroke-width", d => Math.sqrt(Math.abs(d.value)))
+      .attr("stroke-opacity", 0.6);
 
     const node = container.selectAll("circle")
       .data(nodes)
@@ -169,7 +172,6 @@
         });
     }
 
-    // Zoom and pan
     svg.call(d3.zoom()
       .scaleExtent([0.5, 4])
       .on("zoom", ({ transform }) => {
@@ -178,4 +180,3 @@
   </script>
 </body>
 </html>
-
