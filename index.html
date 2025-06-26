@@ -15,14 +15,14 @@
     }
     svg {
       width: 100%;
-      height: 100vh;
+      height: 100%;
       background-color: #f9f9f9;
     }
   </style>
 </head>
 <body>
   <h2>Force-Directed Graph: WM & Peers vs Drivers</h2>
-  <svg></svg>
+  <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid meet"></svg>
 
   <script>
     const nodes = [
@@ -46,7 +46,6 @@
     ];
 
     const links = [
-      // WM
       { source: "WM", target: "Core Waste Ops", value: 10 },
       { source: "WM", target: "Landfill Services", value: 10 },
       { source: "WM", target: "Recycling Services", value: 7 },
@@ -59,8 +58,6 @@
       { source: "WM", target: "Regulatory Risk", value: -5 },
       { source: "WM", target: "Labor/Fuel Cost Risk", value: -5 },
       { source: "WM", target: "Capital Intensity", value: -4 },
-
-      // RSG
       { source: "RSG", target: "Core Waste Ops", value: 9 },
       { source: "RSG", target: "Landfill Services", value: 9 },
       { source: "RSG", target: "Recycling Services", value: 6 },
@@ -69,8 +66,6 @@
       { source: "RSG", target: "Commodity Exposure", value: -5 },
       { source: "RSG", target: "Regulatory Risk", value: -4 },
       { source: "RSG", target: "Labor/Fuel Cost Risk", value: -5 },
-
-      // WCN
       { source: "WCN", target: "Core Waste Ops", value: 9 },
       { source: "WCN", target: "Landfill Services", value: 8 },
       { source: "WCN", target: "Recycling Services", value: 6 },
@@ -78,15 +73,11 @@
       { source: "WCN", target: "Commodity Exposure", value: -5 },
       { source: "WCN", target: "Regulatory Risk", value: -4 },
       { source: "WCN", target: "Labor/Fuel Cost Risk", value: -4 },
-
-      // CLH
       { source: "CLH", target: "Environmental Services", value: 10 },
       { source: "CLH", target: "Clean Tech", value: 7 },
       { source: "CLH", target: "Metal Recycling", value: 6 },
       { source: "CLH", target: "Commodity Exposure", value: -4 },
       { source: "CLH", target: "Regulatory Risk", value: -6 },
-
-      // CWST
       { source: "CWST", target: "Recycling Services", value: 7 },
       { source: "CWST", target: "Plastic Recycling", value: 6 },
       { source: "CWST", target: "Environmental Services", value: 6 },
@@ -95,9 +86,9 @@
       { source: "CWST", target: "Regulatory Risk", value: -5 }
     ];
 
-    const svg = d3.select("svg"),
-          width = window.innerWidth,
-          height = window.innerHeight;
+    const svg = d3.select("svg");
+    const width = 1200;
+    const height = 800;
 
     const color = d3.scaleOrdinal()
       .domain(["company", "driver", "anti"])
@@ -111,7 +102,7 @@
       .join("line")
       .attr("stroke", d => {
         const target = nodes.find(n => n.id === d.target || n.id === d.target.id);
-        return target.group === "anti" ? "#d62728" : "#2ca02c"; // red or green
+        return target.group === "anti" ? "#d62728" : "#2ca02c";
       })
       .attr("stroke-width", d => Math.sqrt(Math.abs(d.value)))
       .attr("stroke-opacity", 0.6);
@@ -132,10 +123,10 @@
       .style("font-size", "12px");
 
     const simulation = d3.forceSimulation(nodes)
-      .force("link", d3.forceLink(links).id(d => d.id).distance(140))
-      .force("charge", d3.forceManyBody().strength(-500))
+      .force("link", d3.forceLink(links).id(d => d.id).distance(160))
+      .force("charge", d3.forceManyBody().strength(-800))
       .force("center", d3.forceCenter(width / 2, height / 2))
-      .force("collide", d3.forceCollide(40))
+      .force("collide", d3.forceCollide(45))
       .on("tick", ticked);
 
     function ticked() {
@@ -180,3 +171,4 @@
   </script>
 </body>
 </html>
+
